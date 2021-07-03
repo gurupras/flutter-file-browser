@@ -7,7 +7,7 @@ class FileBrowserController extends GetxController {
   final FilesystemInterface fs;
   final currentDir = new FileSystemEntry.blank().obs;
   final currentLayout = Layout.LIST_VIEW.obs;
-  final dirFirst = false.obs;
+  final showDirectoriesFirst = false.obs;
 
   final RxSet<FileSystemEntry> selected;
 
@@ -17,7 +17,7 @@ class FileBrowserController extends GetxController {
   Future<List<FileSystemEntryStat>> sortedListing(FileSystemEntry entry) async {
     final contents = await fs.listContents(entry);
     contents.sort((a, b) {
-      if (dirFirst.value) {
+      if (showDirectoriesFirst.value) {
         // We need to put dirs first
         if (a.entry.isDir && !b.entry.isDir) {
           return -1;

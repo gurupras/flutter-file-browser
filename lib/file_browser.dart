@@ -10,11 +10,11 @@ class FileBrowser extends StatelessWidget {
   late final FileBrowserController controller;
   late final FileSystemEntry root;
   FileBrowser(FilesystemInterface fs, FileSystemEntry entry,
-      {bool dirFirst = true}) {
+      {bool showDirectoriesFirst = true}) {
     this.root = entry;
     controller = FileBrowserController(fs: fs);
     controller.currentDir.value = entry;
-    controller.dirFirst.value = dirFirst;
+    controller.showDirectoriesFirst.value = showDirectoriesFirst;
   }
 
   @override
