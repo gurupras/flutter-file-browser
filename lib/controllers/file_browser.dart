@@ -3,15 +3,20 @@ import 'package:get/get.dart';
 
 enum Layout { LIST_VIEW, GRID_VIEW }
 
+typedef SelectionCallback = Future<void> Function(
+    FileSystemEntry entry, bool selected);
+
 class FileBrowserController extends GetxController {
   final FilesystemInterface fs;
   final currentDir = new FileSystemEntry.blank().obs;
   final currentLayout = Layout.LIST_VIEW.obs;
   final showDirectoriesFirst = false.obs;
 
+  SelectionCallback? onSelectionUpdate;
+
   final RxSet<FileSystemEntry> selected;
 
-  FileBrowserController({required this.fs})
+  FileBrowserController({required this.fs, this.onSelectionUpdate})
       : selected = RxSet<FileSystemEntry>();
 
   Future<List<FileSystemEntryStat>> sortedListing(FileSystemEntry entry) async {
@@ -30,11 +35,15 @@ class FileBrowserController extends GetxController {
     return contents;
   }
 
-  void toggleSelect(FileSystemEntry entry) {
-    if (selected.contains(entry)) {
+  void toggleSelect(FileSystemEntry entry) async {
+    final contains = selected.contains(entry);
+    if (contains) {
       selected.remove(entry);
     } else {
       selected.add(entry);
+    }
+    if (onSelectionUpdate != null) {
+      await onSelectionUpdate!(entry, !contains);
     }
   }
 }
