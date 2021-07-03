@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:chunked_stream/chunked_stream.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as imageLib;
 import 'package:path/path.dart' as path;
@@ -13,7 +14,7 @@ class LocalFileSystem extends FilesystemInterface {
 
   @override
   Future<Widget> getThumbnail(FileSystemEntry entry,
-      {double width = 64.0, double height = 64.0}) async {
+      {double? width, double? height}) async {
     if (entry.isDir) {
       return Icon(Icons.folder_outlined, size: height, color: Colors.grey);
     } else {
@@ -71,21 +72,35 @@ class LocalFileSystem extends FilesystemInterface {
   @override
   Future<List<int>> readImage(FileSystemEntry entry,
       {double? width, double? height}) async {
-    final image = imageLib.decodeImage(new File(entry.path).readAsBytesSync());
-    if (image != null) {
-      // Resize the image to a thumbnail (maintaining the aspect ratio).
-      int? rw, rh;
-      if (width != null) {
-        rw = width.round();
-      }
-      if (height != null) {
-        rh = height.round();
-      }
-      final thumbnail = imageLib.copyResize(image, width: rw, height: rh);
-      final bytes = imageLib.encodePng(thumbnail);
-      return bytes;
-    } else {
-      throw 'Error decoding image';
+    return compute(_getThumbnailFromFile,
+        new _ComputeArguments(path: entry.path, width: width, height: height));
+  }
+}
+
+class _ComputeArguments {
+  final String path;
+  final double? width;
+  final double? height;
+
+  _ComputeArguments(
+      {required this.path, required this.width, required this.height});
+}
+
+FutureOr<List<int>> _getThumbnailFromFile(_ComputeArguments args) async {
+  final image = imageLib.decodeImage(new File(args.path).readAsBytesSync());
+  if (image != null) {
+    // Resize the image to a thumbnail (maintaining the aspect ratio).
+    int? rw, rh;
+    if (args.width != null) {
+      rw = args.width!.round();
     }
+    if (args.height != null) {
+      rh = args.height!.round();
+    }
+    final thumbnail = imageLib.copyResize(image, width: rw, height: rh);
+    final bytes = imageLib.encodePng(thumbnail);
+    return bytes;
+  } else {
+    throw 'Error decoding image';
   }
 }
