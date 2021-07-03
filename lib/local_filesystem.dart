@@ -19,7 +19,7 @@ class LocalFileSystem extends FilesystemInterface {
     } else {
       final ext = path.extension(entry.name);
       if (ext == '.png') {
-        final bytes = await readPNG(entry, width: width, height: height);
+        final bytes = await readImage(entry, width: width, height: height);
         return Image.memory(Uint8List.fromList(bytes), fit: BoxFit.contain);
       }
     }
@@ -69,7 +69,7 @@ class LocalFileSystem extends FilesystemInterface {
   }
 
   @override
-  Future<List<int>> readPNG(FileSystemEntry entry,
+  Future<List<int>> readImage(FileSystemEntry entry,
       {double? width, double? height}) async {
     final image = imageLib.decodeImage(new File(entry.path).readAsBytesSync());
     if (image != null) {

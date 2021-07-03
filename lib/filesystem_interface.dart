@@ -99,6 +99,6 @@ abstract class FilesystemInterface {
       {double width, double height});
 
   Future<Stream<List<int>>> read(FileSystemEntry entry, {int bufferSize = 512});
-  Future<List<int>> readPNG(FileSystemEntry entry,
+  Future<List<int>> readImage(FileSystemEntry entry,
       {double? width, double? height});
 }
