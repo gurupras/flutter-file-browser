@@ -17,8 +17,8 @@ class LocalFileSystem extends FilesystemInterface {
     if (entry.isDir) {
       return Icon(Icons.folder_outlined, size: height, color: Colors.grey);
     } else {
-      final ext = path.extension(entry.name);
-      if (ext == '.png') {
+      final ext = path.extension(entry.name).toLowerCase();
+      if (ext == '.png' || ext == '.jpg' || ext == '.jpeg') {
         final bytes = await readImage(entry, width: width, height: height);
         return Image.memory(Uint8List.fromList(bytes), fit: BoxFit.contain);
       }
