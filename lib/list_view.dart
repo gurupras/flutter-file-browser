@@ -101,6 +101,8 @@ class ListViewEntry extends StatelessWidget {
           Container(
               margin: EdgeInsets.zero,
               alignment: Alignment.centerLeft,
+              width: 64.0,
+              height: 64.0,
               child: Thumbnail(fs: fs, entry: entry.entry)),
           Flexible(
               child: Container(
