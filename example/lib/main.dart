@@ -48,8 +48,7 @@ class Demo extends StatelessWidget {
         if (snapshot.hasData) {
           final data = snapshot.data as FileSystemEntry?;
           if (data != null) {
-            final fs = new LocalFileSystem(root: rootEntry!.path);
-            return FileBrowser(fs, rootEntry!);
+            return FileBrowser(root: rootEntry!);
           }
         }
         return Container();
