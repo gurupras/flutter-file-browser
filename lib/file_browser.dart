@@ -14,9 +14,10 @@ class FileBrowser extends StatelessWidget {
     if (controller != null) {
       this.controller = controller;
     } else {
-      controller = FileBrowserController(fs: LocalFileSystem(root: root.path));
-      controller.currentDir.value = this.root;
-      controller.showDirectoriesFirst.value = true;
+      this.controller =
+          FileBrowserController(fs: LocalFileSystem(root: root.path));
+      this.controller.currentDir.value = this.root;
+      this.controller.showDirectoriesFirst.value = true;
     }
   }
 
