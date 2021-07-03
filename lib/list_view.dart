@@ -44,15 +44,19 @@ class ListViewLayout extends StatelessWidget {
                         ? Colors.blue[100]
                         : Colors.transparent,
                     onTap: () {
+                      if (entry!.entry.isDir) {
+                        if (showParentEntry && index == 0) {
+                          controller.currentDir.value = entry!.entry;
+                        } else if (entry!.entry.isDir) {
+                          controller.currentDir.value = entry.entry;
+                        }
+                      } else {
+                        controller.toggleSelect(entry!.entry);
+                      }
                       if (controller.selected.length > 0) {
                         // controller.toggleSelect(entry!.entry);
                       } else {
                         //
-                      }
-                      if (showParentEntry && index == 0) {
-                        controller.currentDir.value = entry!.entry;
-                      } else if (entry!.entry.isDir) {
-                        controller.currentDir.value = entry.entry;
                       }
                     },
                     onLongPress: () {
