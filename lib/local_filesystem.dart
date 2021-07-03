@@ -23,7 +23,7 @@ class LocalFileSystem extends FilesystemInterface {
         return Image.memory(Uint8List.fromList(bytes), fit: BoxFit.contain);
       }
     }
-    return Icon(Icons.description, size: width, color: Colors.grey);
+    return Icon(Icons.description, size: height, color: Colors.grey);
   }
 
   @override
