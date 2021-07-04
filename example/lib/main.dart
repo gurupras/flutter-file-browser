@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:file_browser/file_browser.dart';
 import 'package:file_browser/filesystem_interface.dart';
-import 'package:file_browser/local_filesystem.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;

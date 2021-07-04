@@ -46,12 +46,12 @@ class ListViewLayout extends StatelessWidget {
                     onTap: () {
                       if (entry!.entry.isDir) {
                         if (showParentEntry && index == 0) {
-                          controller.currentDir.value = entry!.entry;
-                        } else if (entry!.entry.isDir) {
+                          controller.currentDir.value = entry.entry;
+                        } else if (entry.entry.isDir) {
                           controller.currentDir.value = entry.entry;
                         }
                       } else {
-                        controller.toggleSelect(entry!.entry);
+                        controller.toggleSelect(entry.entry);
                       }
                       if (controller.selected.length > 0) {
                         // controller.toggleSelect(entry!.entry);
