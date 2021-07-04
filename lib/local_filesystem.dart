@@ -1,13 +1,17 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:chunked_stream/chunked_stream.dart';
+import 'package:file_browser/semaphore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as imageLib;
 import 'package:path/path.dart' as path;
 import 'package:file_browser/filesystem_interface.dart';
+
+final _semaphore = Semaphore(max(Platform.numberOfProcessors - 1, 1));
 
 class LocalFileSystem extends FilesystemInterface {
   LocalFileSystem({required String root}) : super(root: root);
@@ -20,7 +24,12 @@ class LocalFileSystem extends FilesystemInterface {
     } else {
       final ext = path.extension(entry.name).toLowerCase();
       if (ext == '.png' || ext == '.jpg' || ext == '.jpeg') {
-        final bytes = await readImage(entry, width: width, height: height);
+        await _semaphore.acquire();
+        final bytes = await compute(
+            _getThumbnailFromFile,
+            new _ComputeArguments(
+                path: entry.path, width: width, height: height));
+        _semaphore.release();
         return Image.memory(Uint8List.fromList(bytes), fit: BoxFit.contain);
       }
     }
@@ -67,13 +76,6 @@ class LocalFileSystem extends FilesystemInterface {
     final stream = bufferChunkedStream(new File(entry.path).openRead(),
         bufferSize: bufferSize);
     return stream;
-  }
-
-  @override
-  Future<List<int>> readImage(FileSystemEntry entry,
-      {double? width, double? height}) async {
-    return compute(_getThumbnailFromFile,
-        new _ComputeArguments(path: entry.path, width: width, height: height));
   }
 }
 
