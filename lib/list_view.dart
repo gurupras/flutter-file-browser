@@ -92,7 +92,7 @@ class ListViewLayout extends StatelessWidget {
 }
 
 class ListViewEntry extends StatelessWidget {
-  final FilesystemInterface fs;
+  final FileSystemInterface fs;
   final FileSystemEntryStat entry;
   final bool showInfo;
 
@@ -156,7 +156,7 @@ class ListViewEntry extends StatelessWidget {
 }
 
 class Thumbnail extends StatelessWidget {
-  final FilesystemInterface fs;
+  final FileSystemInterface fs;
   final FileSystemEntry entry;
 
   Thumbnail({required this.fs, required this.entry});

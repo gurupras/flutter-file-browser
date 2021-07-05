@@ -13,7 +13,7 @@ import 'package:file_browser/filesystem_interface.dart';
 
 final _semaphore = Semaphore(max(Platform.numberOfProcessors - 1, 1));
 
-class LocalFileSystem extends FilesystemInterface {
+class LocalFileSystem extends FileSystemInterface {
   @override
   Future<Widget> getThumbnail(FileSystemEntry entry,
       {double? width, double? height}) async {

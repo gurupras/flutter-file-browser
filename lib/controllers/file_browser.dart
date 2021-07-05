@@ -8,7 +8,7 @@ typedef SelectionCallback = Future<void> Function(
     FileSystemEntry entry, bool selected);
 
 class FileBrowserController extends GetxController {
-  final FilesystemInterface fs;
+  final FileSystemInterface fs;
 
   List<FileSystemEntryStat> roots = List<FileSystemEntryStat>.empty();
   final rootPathsSet = Set<String>();

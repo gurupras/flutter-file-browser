@@ -87,7 +87,7 @@ class FolderEntry extends FileSystemEntry {
         );
 }
 
-abstract class FilesystemInterface {
+abstract class FileSystemInterface {
   Future<FileSystemEntryStat> stat(FileSystemEntry entry);
   Future<List<FileSystemEntryStat>> listContents(FileSystemEntry entry);
   Future<Widget> getThumbnail(FileSystemEntry entry,
