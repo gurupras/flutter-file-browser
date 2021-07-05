@@ -1,13 +1,15 @@
 import 'dart:io';
 
+import 'package:file_browser/controllers/file_browser.dart';
 import 'package:file_browser/file_browser.dart';
 import 'package:file_browser/filesystem_interface.dart';
+import 'package:file_browser/local_filesystem.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:permission_handler/permission_handler.dart';
 
-FileSystemEntry? rootEntry;
+FileSystemEntryStat? rootEntry;
 
 void main() async {
   runApp(MyApp());
@@ -39,15 +41,19 @@ class MyApp extends StatelessWidget {
 }
 
 class Demo extends StatelessWidget {
+  final fs = LocalFileSystem();
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: checkAndRequestPermission(),
+      future: checkAndRequestPermission(fs),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          final data = snapshot.data as FileSystemEntry?;
+          final data = snapshot.data as List<FileSystemEntryStat>?;
           if (data != null) {
-            return FileBrowser(root: rootEntry!);
+            final controller = FileBrowserController(fs: fs);
+            controller.updateRoots(data);
+            return FileBrowser(controller: controller);
           }
         }
         return Container();
@@ -55,9 +61,11 @@ class Demo extends StatelessWidget {
     );
   }
 
-  Future<FileSystemEntry?> checkAndRequestPermission() async {
+  Future<List<FileSystemEntryStat>?> checkAndRequestPermission(
+      LocalFileSystem fs) async {
+    var entry = FileSystemEntry.blank();
     if (Platform.isLinux || Platform.isMacOS) {
-      rootEntry = new FileSystemEntry(
+      entry = new FileSystemEntry(
           name: '/', path: '/', relativePath: '/', isDir: true);
     } else if (Platform.isAndroid || Platform.isIOS) {
       var status = await Permission.storage.status;
@@ -70,12 +78,18 @@ class Demo extends StatelessWidget {
       }
       await checkAndRequestManageStoragePermission();
       final directories = await getExternalStorageDirectories();
-      final rootPath = directories![0].path;
-      final name = path.basename(rootPath);
-      rootEntry = new FileSystemEntry(
-          name: name, path: rootPath, relativePath: name, isDir: true);
+      final roots = await Future.wait(directories!.map((dir) {
+        final name = path.basename(dir.path);
+        final relativePath = name;
+        final dirPath = dir.path;
+        final entry = new FileSystemEntry(
+            name: name, path: dirPath, relativePath: relativePath, isDir: true);
+        return fs.stat(entry);
+      }));
+      return roots;
     }
-    return rootEntry;
+    rootEntry = await fs.stat(entry);
+    return List.from([rootEntry]);
   }
 
   Future<bool> checkAndRequestManageStoragePermission() async {

@@ -88,9 +88,7 @@ class FolderEntry extends FileSystemEntry {
 }
 
 abstract class FilesystemInterface {
-  final String root;
-  FilesystemInterface({required this.root});
-
+  Future<FileSystemEntryStat> stat(FileSystemEntry entry);
   Future<List<FileSystemEntryStat>> listContents(FileSystemEntry entry);
   Future<Widget> getThumbnail(FileSystemEntry entry,
       {double width, double height});

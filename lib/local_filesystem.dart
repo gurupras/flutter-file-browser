@@ -14,8 +14,6 @@ import 'package:file_browser/filesystem_interface.dart';
 final _semaphore = Semaphore(max(Platform.numberOfProcessors - 1, 1));
 
 class LocalFileSystem extends FilesystemInterface {
-  LocalFileSystem({required String root}) : super(root: root);
-
   @override
   Future<Widget> getThumbnail(FileSystemEntry entry,
       {double? width, double? height}) async {
@@ -37,6 +35,25 @@ class LocalFileSystem extends FilesystemInterface {
   }
 
   @override
+  Future<FileSystemEntryStat> stat(FileSystemEntry entry) async {
+    if (entry.isDir) {
+      final stat = await Directory(entry.path).stat();
+      return FileSystemEntryStat(
+          entry: entry,
+          lastModified: stat.modified.millisecondsSinceEpoch,
+          size: stat.size,
+          mode: stat.mode);
+    } else {
+      final stat = await File(entry.path).stat();
+      return FileSystemEntryStat(
+          entry: entry,
+          lastModified: stat.modified.millisecondsSinceEpoch,
+          size: stat.size,
+          mode: stat.mode);
+    }
+  }
+
+  @override
   Future<List<FileSystemEntryStat>> listContents(FileSystemEntry entry) {
     var files = <FileSystemEntryStat>[];
     var completer = Completer<List<FileSystemEntryStat>>();
@@ -45,25 +62,15 @@ class LocalFileSystem extends FilesystemInterface {
     lister.listen((file) async {
       final name = path.basename(file.path);
       final relativePath = path.join(entry.relativePath, name);
+      var child = FileSystemEntry.blank();
       if (File(file.path).existsSync()) {
-        final child = new FileEntry(
+        child = new FileEntry(
             name: name, path: file.path, relativePath: relativePath);
-        final stat = File(file.path).statSync();
-        files.add(new FileSystemEntryStat(
-            entry: child,
-            lastModified: stat.modified.millisecondsSinceEpoch,
-            size: stat.size,
-            mode: stat.mode));
       } else if (Directory(file.path).existsSync()) {
-        final child = new FolderEntry(
+        child = new FolderEntry(
             name: name, path: file.path, relativePath: relativePath);
-        final stat = Directory(file.path).statSync();
-        files.add(new FileSystemEntryStat(
-            entry: child,
-            lastModified: stat.modified.millisecondsSinceEpoch,
-            size: stat.size,
-            mode: stat.mode));
       }
+      files.add(await stat(child));
     },
         // should also register onError
         onDone: () => completer.complete(files));

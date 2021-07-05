@@ -1,5 +1,6 @@
 import 'package:file_browser/filesystem_interface.dart';
 import 'package:get/get.dart';
+import 'package:path/path.dart' as path;
 
 enum Layout { LIST_VIEW, GRID_VIEW }
 
@@ -8,6 +9,10 @@ typedef SelectionCallback = Future<void> Function(
 
 class FileBrowserController extends GetxController {
   final FilesystemInterface fs;
+
+  List<FileSystemEntryStat> roots = List<FileSystemEntryStat>.empty();
+  final rootPathsSet = Set<String>();
+
   final currentDir = new FileSystemEntry.blank().obs;
   final currentLayout = Layout.LIST_VIEW.obs;
   final showDirectoriesFirst = false.obs;
@@ -20,6 +25,10 @@ class FileBrowserController extends GetxController {
       : selected = RxSet<FileSystemEntry>();
 
   Future<List<FileSystemEntryStat>> sortedListing(FileSystemEntry entry) async {
+    if (isRootEntry(entry)) {
+      // Root entry
+      return roots;
+    }
     final contents = await fs.listContents(entry);
     contents.sort((a, b) {
       if (showDirectoriesFirst.value) {
@@ -45,5 +54,22 @@ class FileBrowserController extends GetxController {
     if (onSelectionUpdate != null) {
       await onSelectionUpdate!(entry, !contains);
     }
+  }
+
+  void updateRoots(List<FileSystemEntryStat> roots) {
+    this.roots = roots;
+    rootPathsSet.clear();
+    roots.forEach((entry) {
+      final parent = path.dirname(entry.entry.path);
+      // On Linux, parent of '/' is '/', which poses a problem since we have a fake root
+      // To deal with this, we don't add '/' to rootPathsSet
+      if (parent != '/') {
+        rootPathsSet.add(parent);
+      }
+    });
+  }
+
+  bool isRootEntry(FileSystemEntry entry) {
+    return entry.path == '';
   }
 }

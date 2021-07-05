@@ -9,14 +9,16 @@ import 'package:get/get.dart';
 
 class FileBrowser extends StatelessWidget {
   late final FileBrowserController controller;
-  final FileSystemEntry root;
-  FileBrowser({required this.root, FileBrowserController? controller}) {
+  FileBrowser(
+      {List<FileSystemEntryStat>? roots, FileBrowserController? controller}) {
     if (controller != null) {
       this.controller = controller;
     } else {
-      this.controller =
-          FileBrowserController(fs: LocalFileSystem(root: root.path));
-      this.controller.currentDir.value = this.root;
+      if (roots == null) {
+        throw 'Must specify roots or controller';
+      }
+      this.controller = FileBrowserController(fs: LocalFileSystem());
+      this.controller.updateRoots(roots);
       this.controller.showDirectoriesFirst.value = true;
     }
   }

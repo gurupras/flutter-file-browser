@@ -18,7 +18,7 @@ class ListViewLayout extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final data = snapshot.data as List<FileSystemEntryStat>;
-            final showParentEntry = this.entry.path != controller.fs.root;
+            final showParentEntry = !controller.isRootEntry(this.entry);
             return ListView.separated(
               shrinkWrap: true,
               itemCount: data.length + (showParentEntry ? 1 : 0),
@@ -28,10 +28,13 @@ class ListViewLayout extends StatelessWidget {
                 bool showInfo = true;
                 if (showParentEntry && index == 0) {
                   showInfo = false;
+                  var parentPath = path.dirname(this.entry.path);
+                  // Check if this is root. If it is, then we end up with root again
+                  parentPath = parentPath == this.entry.path ? '' : parentPath;
                   final parentEntry = new FileSystemEntry(
                       name: '..',
                       isDir: true,
-                      path: path.dirname(this.entry.path),
+                      path: parentPath,
                       relativePath: path.dirname(this.entry.relativePath));
                   entry = new FileSystemEntryStat(
                       entry: parentEntry, lastModified: 0, size: 0, mode: 0);
@@ -45,8 +48,11 @@ class ListViewLayout extends StatelessWidget {
                         : Colors.transparent,
                     onTap: () {
                       if (entry!.entry.isDir) {
-                        if (showParentEntry && index == 0) {
-                          controller.currentDir.value = entry.entry;
+                        if (showParentEntry &&
+                            index == 0 &&
+                            controller.rootPathsSet
+                                .contains(entry.entry.path)) {
+                          controller.currentDir.value = FileSystemEntry.blank();
                         } else if (entry.entry.isDir) {
                           controller.currentDir.value = entry.entry;
                         }
