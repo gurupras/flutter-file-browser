@@ -17,9 +17,7 @@ class LocalFileSystem extends FileSystemInterface {
   @override
   Future<Widget> getThumbnail(FileSystemEntry entry,
       {double? width, double? height}) async {
-    if (entry.isDir) {
-      return Icon(Icons.folder_outlined, size: height, color: Colors.grey);
-    } else {
+    if (!entry.isDir) {
       final ext = path.extension(entry.name).toLowerCase();
       if (ext == '.png' || ext == '.jpg' || ext == '.jpeg') {
         await _semaphore.acquire();
@@ -31,7 +29,7 @@ class LocalFileSystem extends FileSystemInterface {
         return Image.memory(Uint8List.fromList(bytes), fit: BoxFit.contain);
       }
     }
-    return Icon(Icons.description, size: height, color: Colors.grey);
+    return super.getThumbnail(entry, width: width, height: height);
   }
 
   @override

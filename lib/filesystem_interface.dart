@@ -89,9 +89,16 @@ class FolderEntry extends FileSystemEntry {
 
 abstract class FileSystemInterface {
   Future<FileSystemEntryStat> stat(FileSystemEntry entry);
+
   Future<List<FileSystemEntryStat>> listContents(FileSystemEntry entry);
+
   Future<Widget> getThumbnail(FileSystemEntry entry,
-      {double width, double height});
+      {double? width, double? height}) async {
+    if (entry.isDir) {
+      return Icon(Icons.folder_outlined, size: height, color: Colors.grey);
+    }
+    return Icon(Icons.description, size: height, color: Colors.grey);
+  }
 
   Future<Stream<List<int>>> read(FileSystemEntry entry, {int bufferSize = 512});
 }
