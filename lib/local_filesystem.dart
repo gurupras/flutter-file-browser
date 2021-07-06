@@ -22,8 +22,8 @@ class LocalFileSystem extends FileSystemInterface {
       if (ext == '.png' || ext == '.jpg' || ext == '.jpeg') {
         await _semaphore.acquire();
         final bytes = await compute(
-            _getThumbnailFromFile,
-            new _ComputeArguments(
+            getThumbnailFromFile,
+            new ComputeArguments(
                 path: entry.path, width: width, height: height));
         _semaphore.release();
         return Image.memory(Uint8List.fromList(bytes), fit: BoxFit.contain);
@@ -84,16 +84,7 @@ class LocalFileSystem extends FileSystemInterface {
   }
 }
 
-class _ComputeArguments {
-  final String path;
-  final double? width;
-  final double? height;
-
-  _ComputeArguments(
-      {required this.path, required this.width, required this.height});
-}
-
-FutureOr<List<int>> _getThumbnailFromFile(_ComputeArguments args) async {
+FutureOr<List<int>> getThumbnailFromFile(ComputeArguments args) async {
   final image = imageLib.decodeImage(new File(args.path).readAsBytesSync());
   if (image != null) {
     // Resize the image to a thumbnail (maintaining the aspect ratio).
@@ -110,4 +101,13 @@ FutureOr<List<int>> _getThumbnailFromFile(_ComputeArguments args) async {
   } else {
     throw 'Error decoding image';
   }
+}
+
+class ComputeArguments {
+  final String path;
+  final double? width;
+  final double? height;
+
+  ComputeArguments(
+      {required this.path, required this.width, required this.height});
 }
