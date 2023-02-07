@@ -33,9 +33,9 @@ class FileBrowserController extends GetxController {
     contents.sort((a, b) {
       if (showDirectoriesFirst.value) {
         // We need to put dirs first
-        if (a.entry.isDir && !b.entry.isDir) {
+        if (a.entry.isDirectory && !b.entry.isDirectory) {
           return -1;
-        } else if (!a.entry.isDir && b.entry.isDir) {
+        } else if (!a.entry.isDirectory && b.entry.isDirectory) {
           return 1;
         }
       }

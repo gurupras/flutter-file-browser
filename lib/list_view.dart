@@ -33,7 +33,7 @@ class ListViewLayout extends StatelessWidget {
                   parentPath = parentPath == this.entry.path ? '' : parentPath;
                   final parentEntry = new FileSystemEntry(
                       name: '..',
-                      isDir: true,
+                      isDirectory: true,
                       path: parentPath,
                       relativePath: path.dirname(this.entry.relativePath));
                   entry = new FileSystemEntryStat(
@@ -47,13 +47,13 @@ class ListViewLayout extends StatelessWidget {
                         ? Colors.blue[100]
                         : Colors.transparent,
                     onTap: () {
-                      if (entry!.entry.isDir) {
+                      if (entry!.entry.isDirectory) {
                         if (showParentEntry &&
                             index == 0 &&
                             controller.rootPathsSet
                                 .contains(entry.entry.path)) {
                           controller.currentDir.value = FileSystemEntry.blank();
-                        } else if (entry.entry.isDir) {
+                        } else if (entry.entry.isDirectory) {
                           controller.currentDir.value = entry.entry;
                         }
                       } else {

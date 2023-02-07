@@ -4,20 +4,20 @@ class FileSystemEntry {
   final String name;
   final String path;
   final String relativePath;
-  final bool isDir;
+  final bool isDirectory;
 
   FileSystemEntry(
       {required this.name,
       required this.path,
       required this.relativePath,
-      required this.isDir});
+      required this.isDirectory});
 
   Map<String, dynamic> toJson() {
     var map = new Map<String, dynamic>();
     map['name'] = this.name;
     map['relativePath'] = this.relativePath;
     map['path'] = this.path;
-    map['isDir'] = this.isDir;
+    map['isDirectory'] = this.isDirectory;
     return map;
   }
 
@@ -25,13 +25,17 @@ class FileSystemEntry {
     String name = json['name'];
     String relativePath = json['relativePath'];
     String path = json['path'];
-    bool isDir = json['isDir'];
+    bool isDirectory = json['isDirectory'];
     return new FileSystemEntry(
-        name: name, path: path, relativePath: relativePath, isDir: isDir);
+        name: name,
+        path: path,
+        relativePath: relativePath,
+        isDirectory: isDirectory);
   }
 
   factory FileSystemEntry.blank() {
-    return FileSystemEntry(isDir: false, name: '', path: '', relativePath: '');
+    return FileSystemEntry(
+        isDirectory: false, name: '', path: '', relativePath: '');
   }
 }
 
@@ -71,7 +75,11 @@ class FileEntry extends FileSystemEntry {
       {required String name,
       required String path,
       required String relativePath})
-      : super(name: name, path: path, relativePath: relativePath, isDir: false);
+      : super(
+            name: name,
+            path: path,
+            relativePath: relativePath,
+            isDirectory: false);
 }
 
 class FolderEntry extends FileSystemEntry {
@@ -83,7 +91,7 @@ class FolderEntry extends FileSystemEntry {
           name: name,
           path: path,
           relativePath: relativePath,
-          isDir: true,
+          isDirectory: true,
         );
 }
 
@@ -94,7 +102,7 @@ abstract class FileSystemInterface {
 
   Future<Widget> getThumbnail(FileSystemEntry entry,
       {double? width, double? height}) async {
-    if (entry.isDir) {
+    if (entry.isDirectory) {
       return Icon(Icons.folder_outlined, size: height, color: Colors.grey);
     }
     return Icon(Icons.description, size: height, color: Colors.grey);

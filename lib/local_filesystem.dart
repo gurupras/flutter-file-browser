@@ -17,7 +17,7 @@ class LocalFileSystem extends FileSystemInterface {
   @override
   Future<Widget> getThumbnail(FileSystemEntry entry,
       {double? width, double? height}) async {
-    if (!entry.isDir) {
+    if (!entry.isDirectory) {
       final ext = path.extension(entry.name).toLowerCase();
       if (ext == '.png' || ext == '.jpg' || ext == '.jpeg') {
         await _semaphore.acquire();
@@ -34,7 +34,7 @@ class LocalFileSystem extends FileSystemInterface {
 
   @override
   Future<FileSystemEntryStat> stat(FileSystemEntry entry) async {
-    if (entry.isDir) {
+    if (entry.isDirectory) {
       final stat = await Directory(entry.path).stat();
       return FileSystemEntryStat(
           entry: entry,

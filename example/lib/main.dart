@@ -66,7 +66,7 @@ class Demo extends StatelessWidget {
     var entry = FileSystemEntry.blank();
     if (Platform.isLinux || Platform.isMacOS) {
       entry = new FileSystemEntry(
-          name: '/', path: '/', relativePath: '/', isDir: true);
+          name: '/', path: '/', relativePath: '/', isDirectory: true);
     } else if (Platform.isAndroid || Platform.isIOS) {
       var status = await Permission.storage.status;
       if (status.isDenied) {
@@ -83,7 +83,10 @@ class Demo extends StatelessWidget {
         final relativePath = name;
         final dirPath = dir.path;
         final entry = new FileSystemEntry(
-            name: name, path: dirPath, relativePath: relativePath, isDir: true);
+            name: name,
+            path: dirPath,
+            relativePath: relativePath,
+            isDirectory: true);
         return fs.stat(entry);
       }));
       return roots;
